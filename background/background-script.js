@@ -26,37 +26,37 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     } else {
       chrome.browserAction.setIcon({ path: 'icon.png' });
       chrome.browserAction.setTitle({ title: 'OpenGPT-Assistant Voice (inactive)' });
-      // Stop listening for response messages
-      stopListeningForResponses();
-    }
-  }
+// Stop listening for response messages
+stopListeningForResponses();
+}
+}
 });
 
 // Listen for response messages from the chat page
 function listenForResponses() {
-  chrome.webRequest.onBeforeRequest.addListener(
-    (details) => {
-      // Check if the request is a response message
-      if (details.url.includes('/api/v1/messages')) {
-        // Get the message text from the request body
-        const message = getMessageFromRequestBody(details.requestBody.raw[0].bytes);
-        // Synthesize the voice for the message
-        synthesizeVoice(message);
-      }
-    },
-    { urls: ['https://chat.openai.com/*'] },
-    ['requestBody']
-  );
+chrome.webRequest.onBeforeRequest.addListener(
+(details) => {
+// Check if the request is a response message
+if (details.url.includes('/api/v1/messages')) {
+// Get the message text from the request body
+const message = getMessageFromRequestBody(details.requestBody.raw[0].bytes);
+// Synthesize the voice for the message
+synthesizeVoice(message);
+}
+},
+{ urls: ['https://chat.openai.com/*'] },
+['requestBody']
+);
 }
 
 // Stop listening for response messages
 function stopListeningForResponses() {
-  chrome.webRequest.onBeforeRequest.removeListener(listenForResponses);
+chrome.webRequest.onBeforeRequest.removeListener(listenForResponses);
 }
 
 // Extract the message text from a request body object
 function getMessageFromRequestBody(requestBody) {
-  // Parse the request body as a JSON object
+// Parse the request body as a JSON object
 const body = JSON.parse(String.fromCharCode.apply(null, requestBody));
 // Return the 'text' property from the body object
 return body.text;
