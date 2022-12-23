@@ -34,8 +34,11 @@ if (location.hostname === 'chat.openai.com' && location.pathname.startsWith('/ch
   checkmark.textContent = '';
 }
 
-// Synthesize the voice using the main.
+// Synthesize the voice using the main.py Python script
 function synthesizeVoice() {
+ // Get the message to be synthesized from the extension UI
+  const message = document.getElementById('message').value;
+
   // Run the main.py script with the message to be synthesized as an argument
   PythonShell.run('../main.py', { args: [message] }, (err, results) => {
     if (err) throw err;
