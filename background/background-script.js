@@ -31,43 +31,68 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     }
   }
 });
-
-// Function to start listening for response messages
+// Listen for response messages from the chat page
 function listenForResponses() {
-  // Add a listener to intercept response messages
   chrome.webRequest.onBeforeRequest.addListener(
-    (details) => {
+    function(details) { // <-- define the function as an anonymous function here
       // Check if the request is a response message
-      if (details.url.startsWith('https://chat.openai.com/api/conversations/')) {
-        // Synthesize the response message using the main.py script
-        synthesizeResponse(details.requestBody.formData.text[0]);
+      if (details.url.includes('/api/v1/messages')) {
+        // Get the message text from the request body
+        const message = getMessageFromRequestBody(details.requestBody.raw[0].bytes);
+        // Synthesize the voice for the message
+        synthesizeVoice(message);
       }
     },
-    {
-      urls: ['https://chat.openai.com/api/conversations/*'],
-      types: ['xmlhttprequest'],
-    },
+    { urls: ['https://chat.openai.com/*'] },
     ['requestBody']
   );
 }
 
-// Function to stop listening for response messages
+// Stop listening for response messages
 function stopListeningForResponses() {
-  // Remove the listener for intercepting response messages
   chrome.webRequest.onBeforeRequest.removeListener(listenForResponses);
 }
 
-// Function to synthesize a response message using the main.py script
-function synthesizeResponse(text) {
-  // Run the main.py script with the response message as an argument
-  const options = {
-    scriptPath: './',
-    args: [text],
-  };
-  PythonShell.run('main.py', options, (err) => {
-    if (err) throw err;
-    // Play the synthesized audio
-    const audio = new Audio('voice.mp3');
-    audio.play();
-  });
+// Extract the message text from a request body object
+function getMessageFromRequestBody(requestBody) {
+  // Parse the request body as a JSON object
+  const body = JSON.parse(String.fromCharCode.apply(null, requestBody));
+  // Return the 'text' property from the body object
+  return body.text;
 }
+
+// Synthesize the voice for a message using the main.py script
+function synthesizeVoice(message) {
+  // Run the main.py script with the message text as an argument
+  chrome.runtime.sendNativeMessage(
+    'openai_voice_extension',
+    { message: message },
+    (response) => {
+// Handle the response from the main.py script
+if (chrome.runtime.lastError) {
+console.error(chrome.runtime.lastError.message);
+} else if (response) {
+// Play the synthesized audio file
+new Audio('voice.mp3').play();
+} else {
+console.error('Error synthesizing voice');
+}
+}
+);
+}
+
+// Get the API key from the environment
+const apiKey = process.env.OPENAI_API_KEY;
+
+// Set the API key in the main.py script
+chrome.runtime.sendNativeMessage(
+'openai_voice_extension',
+{ apiKey: apiKey },
+(response) => {
+if (chrome.runtime.lastError) {
+console.error(chrome.runtime.lastError.message);
+} else if (!response) {
+console.error('Error setting API key');
+}
+}
+);
