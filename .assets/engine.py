@@ -1,8 +1,9 @@
 import requests
 from bs4 import BeautifulSoup
+from grabber import get_url
 
-# Define the URL of the chat transcript
-url = "http://www.chat.openai.com/transcript/XXXXXX"
+# Get the URL of the chat transcript
+url = get_url()
 
 # Send a request to the URL and retrieve the response
 response = requests.get(url)
@@ -21,7 +22,4 @@ for message in messages:
     # Check if the message was sent by the Assistant
     if message.find('div', class_='chat-line__message-sender').text.strip() == "Assistant":
         # Extract the message text and add it to the list of responses
-        responses.append(message.find('div', class_='chat-line__message-text').text.strip())
-
-# Print the list of responses
-print(responses)
+        responses.append(message.find('div', class_='chat-line__message-text').text
