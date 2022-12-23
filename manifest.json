@@ -1,4 +1,4 @@
-/*This is where the magic starts*/{
+{
   "manifest_version": 2,
   "name": "OpenGPT-Assistant Voice",
   "version": "1.0",
