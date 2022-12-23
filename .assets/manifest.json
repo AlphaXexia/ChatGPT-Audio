@@ -1,15 +1,22 @@
-/*This is where the magic starts*/
-{
+/*This is where the magic starts*/{
   "manifest_version": 2,
   "name": "OpenGPT-Assistant Voice",
-  "description": "Generates an AI-generated voice for responses in OpenAI's chat.",
   "version": "1.0",
-  "permissions": ["activeTab"],
+  "description": "Generate AI-generated voices for Assistant's responses in chat.openai.com",
+  "icons": {
+    "128": "icon.png"
+  },
+  "permissions": [
+    "activeTab",
+    "storage",
+    "https://www.googleapis.com/"
+  ],
   "browser_action": {
     "default_icon": "icon.png",
+    "default_title": "OpenGPT-Assistant Voice",
     "default_popup": "popup/index.html"
   },
   "background": {
-    "scripts": ["background/script.js"]
+    "scripts": ["background/background-script.js"]
   }
 }
