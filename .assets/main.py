@@ -1,7 +1,7 @@
 import os
 import tempfile
-
-from engine import responses
+import requests
+from bs4 import BeautifulSoup
 from google.cloud import texttospeech
 
 # Set up the Cloud Text-to-Speech client
@@ -19,7 +19,7 @@ voice = texttospeech.types.VoiceSelectionParams(
 audio_config = texttospeech.types.AudioConfig(
     audio_encoding=texttospeech.enums.AudioEncoding.MP3)
 
-# Synthesize the voice
+# Synthesize the voice using the main.py Python script
 response = client.synthesize_speech(synthesis_input, voice, audio_config)
 
 # Write the synthesized voice to a temporary file
