@@ -21,9 +21,13 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     if (active) {
       chrome.browserAction.setIcon({ path: 'icon-active.png' });
       chrome.browserAction.setTitle({ title: 'OpenGPT-Assistant Voice (active)' });
+      // Start listening for response messages
+      listenForResponses();
     } else {
       chrome.browserAction.setIcon({ path: 'icon.png' });
       chrome.browserAction.setTitle({ title: 'OpenGPT-Assistant Voice (inactive)' });
+      // Stop listening for response messages
+      stopListeningForResponses();
     }
   }
 });
