@@ -1,6 +1,3 @@
-const { PythonShell } = require('python-shell');
-
-// Get the toggle checkbox and extension UI elements
 const toggleCheckbox = document.getElementById('toggle-checkbox');
 const voiceElement = document.getElementById('voice');
 
@@ -13,9 +10,9 @@ toggleCheckbox.addEventListener('change', () => {
   const checkmark = toggleCheckbox.nextElementSibling;
   checkmark.textContent = (toggleCheckbox.checked) ? '\u2713' : '';
 
-  // If the extension is active, synthesize the voice
+  // If the extension is active, synthesize and play the voice
   if (document.body.classList.contains('active')) {
-    synthesizeVoice();
+    synthesizeAndPlayVoice();
   }
 });
 
@@ -25,7 +22,7 @@ if (location.hostname === 'chat.openai.com' && location.pathname.startsWith('/ch
   toggleCheckbox.checked = true;
   const checkmark = toggleCheckbox.nextElementSibling;
   checkmark.textContent = '\u2713';
-  synthesizeVoice();
+  synthesizeAndPlayVoice();
 } else {
   // Terminate the extension if the URL is not a chat page on chat.openai.com
   document.body.classList.remove('active');
@@ -34,13 +31,14 @@ if (location.hostname === 'chat.openai.com' && location.pathname.startsWith('/ch
   checkmark.textContent = '';
 }
 
-// Synthesize the voice using the main.py Python script
-function synthesizeVoice() {
+// Synthesize and play the voice using the main.py Python script
+function synthesizeAndPlayVoice() {
+  const { PythonShell } = require('python-shell');
   PythonShell.run('../main.py', null, (err, results) => {
     if (err) throw err;
     // Set the audio element's source to the synthesized voice file
-      voiceElement.src = 'voice.mp3';
-      // Play the audio
-      voiceElement.play();
-    });
-  }
+    voiceElement.src = 'voice.mp3';
+    // Play the audio
+    voiceElement.play();
+  });
+}
