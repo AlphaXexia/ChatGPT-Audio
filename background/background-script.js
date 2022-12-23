@@ -31,3 +31,43 @@ chrome.storage.onChanged.addListener((changes, namespace) => {
     }
   }
 });
+
+// Function to start listening for response messages
+function listenForResponses() {
+  // Add a listener to intercept response messages
+  chrome.webRequest.onBeforeRequest.addListener(
+    (details) => {
+      // Check if the request is a response message
+      if (details.url.startsWith('https://chat.openai.com/api/conversations/')) {
+        // Synthesize the response message using the main.py script
+        synthesizeResponse(details.requestBody.formData.text[0]);
+      }
+    },
+    {
+      urls: ['https://chat.openai.com/api/conversations/*'],
+      types: ['xmlhttprequest'],
+    },
+    ['requestBody']
+  );
+}
+
+// Function to stop listening for response messages
+function stopListeningForResponses() {
+  // Remove the listener for intercepting response messages
+  chrome.webRequest.onBeforeRequest.removeListener(listenForResponses);
+}
+
+// Function to synthesize a response message using the main.py script
+function synthesizeResponse(text) {
+  // Run the main.py script with the response message as an argument
+  const options = {
+    scriptPath: './',
+    args: [text],
+  };
+  PythonShell.run('main.py', options, (err) => {
+    if (err) throw err;
+    // Play the synthesized audio
+    const audio = new Audio('voice.mp3');
+    audio.play();
+  });
+}
