@@ -1,15 +1,14 @@
-# Import the necessary libraries and the value from the other file
 import os
 import tempfile
 
-from generator import text
+from engine import responses
 from google.cloud import texttospeech
 
 # Set up the Cloud Text-to-Speech client
 client = texttospeech.TextToSpeechClient()
 
 # Set up the synthesis input
-synthesis_input = texttospeech.types.SynthesisInput(text=text)
+synthesis_input = texttospeech.types.SynthesisInput(text='\n'.join(responses))
 
 # Set up the voice synthesis parameters
 voice = texttospeech.types.VoiceSelectionParams(
