@@ -1,26 +1,21 @@
 import os
-import openai
-
-openai.api_key = "YOUR_API_KEY"
+import pyttsx3
 
 def synthesize_voice(text):
-    prompt = (
-        f"Please play the following message: {text}"
-    )
-    completions = openai.Completion.create(
-        engine="text-davinci-002",
-        prompt=prompt,
-        max_tokens=1024,
-        n=1,
-        stop=None,
-        temperature=0.5,
-    )
-    message = completions.choices[0].text
-    message = message.strip()
+    # Initialize the text-to-speech engine
+    engine = pyttsx3.init()
 
-    # Save the synthesized audio to a file
-    with open("voice.mp3", "wb") as f:
-        f.write(completions.choices[0].audio)
+    # Set the voice to use
+    voices = engine.getProperty('voices')
+    engine.setProperty('voice', voices[1].id)
+
+    # Set the rate of speech
+    rate = engine.getProperty('rate')
+    engine.setProperty('rate', rate-50)
+
+    # Synthesize the voice for the given text
+    engine.say(text)
+    engine.runAndWait()
 
 def main():
     # Read the message to be synthesized from stdin
